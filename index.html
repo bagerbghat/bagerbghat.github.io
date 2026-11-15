@@ -8,6 +8,7 @@
     :root { --bg:#0f172a; --card-bg:#1e293b; --accent:#38bdf8; --discord:#5865F2;
       --text:#f8fafc; --text-muted:#94a3b8; --border:#334155;
       --danger:#ef4444; --success:#22c55e; --warning:#f59e0b; }
+    * { box-sizing: border-box; }
     body { font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
       background:var(--bg); color:var(--text); margin:0; padding:40px 20px;
       display:flex; justify-content:center; }
@@ -82,7 +83,8 @@
     .floating-banner { background:linear-gradient(135deg,#1e293b,#0f172a);
       border:1px solid var(--accent); padding:15px 20px; border-radius:8px;
       margin-bottom:20px; display:flex; align-items:center;
-      justify-content:space-between; box-shadow:0 4px 12px rgba(56,189,248,0.15); }
+      justify-content:space-between; gap:12px; flex-wrap:wrap;
+      box-shadow:0 4px 12px rgba(56,189,248,0.15); }
     .footer { text-align:center; margin-top:40px; padding-top:20px;
       border-top:1px solid var(--border); color:var(--text-muted); font-size:0.85rem; }
     .footer-links { display:flex; justify-content:center; gap:20px; margin-bottom:10px; flex-wrap:wrap; }
@@ -112,7 +114,7 @@
       <strong style="color:var(--accent);">⚖️ Garantía Legal y Transparencia B2B:</strong>
       <span style="font-size:0.9rem; color:var(--text-muted);">72h de prueba sin compromiso y política de reembolso según plan.</span>
     </div>
-    <button onclick="openModal('terms')" style="background:var(--accent); border:none; color:#0f172a; padding:6px 12px; border-radius:6px; font-weight:600; cursor:pointer;">Ver Términos</button>
+    <button type="button" onclick="openModal('terms')" style="background:var(--accent); border:none; color:#0f172a; padding:6px 12px; border-radius:6px; font-weight:600; cursor:pointer;">Ver Términos</button>
   </div>
 
   <div class="card">
@@ -179,13 +181,13 @@
         <h3>Plan Mensual</h3>
         <div class="plan-price">800 € <span style="font-size:0.85rem; color:var(--text-muted);">/mes · IVA incluido</span></div>
         <p style="color:var(--text-muted); font-size:0.85rem;">Renovación mensual. Cancela cuando quieras.</p>
-        <button class="btn-pay" onclick="startCheckout('monthly')" id="btn-monthly">Contratar Mensual</button>
+        <button type="button" class="btn-pay" onclick="startCheckout('monthly')" id="btn-monthly">Contratar Mensual</button>
       </div>
       <div class="plan-card featured">
         <h3>Plan Anual</h3>
         <div class="plan-price">9.600 € <span style="font-size:0.85rem; color:var(--text-muted);">/año · IVA incluido</span></div>
         <p style="color:var(--text-muted); font-size:0.85rem;">Pago único anual para continuidad absoluta.</p>
-        <button class="btn-pay" onclick="startCheckout('annual')" id="btn-annual">Contratar Anual</button>
+        <button type="button" class="btn-pay" onclick="startCheckout('annual')" id="btn-annual">Contratar Anual</button>
       </div>
     </div>
     <p style="color:var(--warning); font-size:0.8rem; margin-top:16px;" id="stripe-warning"></p>
@@ -196,9 +198,9 @@
     <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:12px;">
       Introduce tu email para cargar tus monitores:
     </p>
-    <div style="display:flex; gap:10px; margin-bottom:16px;">
-      <input type="email" id="lookup_email" placeholder="tu@empresa.com" style="flex:1;">
-      <button class="btn-action" style="background:var(--accent); color:#0f172a; padding:12px 20px;" onclick="loadMyMonitors()">Cargar</button>
+    <div style="display:flex; gap:10px; margin-bottom:16px; flex-wrap:wrap;">
+      <input type="email" id="lookup_email" placeholder="tu@empresa.com" style="flex:1; min-width:200px;">
+      <button type="button" class="btn-action" style="background:var(--accent); color:#0f172a; padding:12px 20px;" onclick="loadMyMonitors()">Cargar</button>
     </div>
     <table>
       <thead><tr><th>Competidor</th><th>Vector</th><th>Ruta</th><th>Estado</th><th>Acciones</th></tr></thead>
@@ -220,112 +222,126 @@
 
 <div id="legal-modal">
   <div class="modal-box">
-    <button class="close-btn" onclick="closeModal()">×</button>
+    <button type="button" class="close-btn" onclick="closeModal()">×</button>
     <div id="modal-content"></div>
   </div>
 </div>
 
 <script>
 /* ============================================================
-   ⚙️ CONFIGURACIÓN — RELLENA ESTOS VALORES
+   ⚙️ CONFIGURACIÓN — SOLO TOCA LOS VALORES ENTRE COMILLAS
+   No añadas comillas dobles (") dentro de los valores.
+   No añadas saltos de línea dentro de un valor.
    ============================================================ */
 const CONFIG = {
-  // ✅ Tu Reference ID de Supabase (ya está bien)
   SUPABASE_PROJECT_REF: "tjsywodxdwipsfsmiclr",
 
-  // ✅ DATOS DE TU EMPRESA — RELLENA ESTO (obligatorio para Stripe)
   EMPRESA: {
-    nombre: "PENDIENTE — Tu Nombre o Empresa",     // ej: "Moisés Rincón — ADAMANTIUM AI"
-    nif: "PENDIENTE — Tu NIF/DNI",                 // ej: "61320632X"
-    email: "PENDIENTE — tu@email.com",             // ej: "bagerbghat@gmail.com"
-    direccion: "PENDIENTE — Tu dirección fiscal",  // ej: "Calle Mejía Lequerica, 21, 28004 Madrid, España"
+    nombre: "Moisés Rincón - ADAMANTIUM AI",
+    nif: "61320632X",
+    email: "bagerbghat@gmail.com",
+    direccion: "Calle Mejía Lequerica, 21, Madrid, España",
   },
 
-  // ✅ URLs de pago de Stripe (cuando las tengas)
-  // Déjalas en null hasta que crees los Payment Links.
   STRIPE_CHECKOUT: {
     monthly: "https://buy.stripe.com/4gMaEX4Bu4Mz7Ov0rg7g400"
     annual: "https://buy.stripe.com/9B6bJ14Bufrd2ub6PE7g401"
   },
 
-  // ✅ Fecha de última actualización legal
-  LEGAL_LAST_UPDATE: "15/11/2026",  // cámbiala cuando edites los textos
+  LEGAL_LAST_UPDATE: "15/11/2026",
 };
-
 /* ============================================================
    NO TOQUES A PARTIR DE AQUÍ
    ============================================================ */
 
+// Blindaje: si CONFIG tiene un error de sintaxis, este bloque no se ejecuta
+// y el navegador lo dirá en consola. Aun así, los onclick ya están en HTML.
 const FUNCTIONS_URL = `https://${CONFIG.SUPABASE_PROJECT_REF}.supabase.co/functions/v1`;
 
-window.addEventListener('DOMContentLoaded', () => {
-  if (!CONFIG.STRIPE_CHECKOUT.monthly && !CONFIG.STRIPE_CHECKOUT.annual) {
-    document.getElementById('stripe-warning').textContent =
-      "ℹ️ Los pagos aún no están activos. Cuando estén configurados, los botones funcionarán automáticamente.";
-    document.getElementById('btn-monthly').disabled = true;
-    document.getElementById('btn-annual').disabled = true;
+document.addEventListener('DOMContentLoaded', () => {
+  // Aviso de pago no configurado
+  const warn = document.getElementById('stripe-warning');
+  const btnM = document.getElementById('btn-monthly');
+  const btnA = document.getElementById('btn-annual');
+  const hasMonthly = CONFIG.STRIPE_CHECKOUT && CONFIG.STRIPE_CHECKOUT.monthly;
+  const hasAnnual = CONFIG.STRIPE_CHECKOUT && CONFIG.STRIPE_CHECKOUT.annual;
+
+  if (!hasMonthly && !hasAnnual) {
+    if (warn) warn.textContent = "ℹ️ Los pagos aún no están activos. Cuando estén configurados, los botones funcionarán automáticamente.";
+    if (btnM) btnM.disabled = true;
+    if (btnA) btnA.disabled = true;
+  } else {
+    if (!hasMonthly && btnM) btnM.disabled = true;
+    if (!hasAnnual && btnA) btnA.disabled = true;
   }
-});
 
-document.addEventListener('click', (e) => {
-  document.querySelectorAll('.info-icon.active').forEach(el => {
-    if (!el.contains(e.target)) el.classList.remove('active');
-  });
-});
-document.querySelectorAll('.info-icon').forEach(icon => {
-  icon.addEventListener('click', (e) => {
-    e.stopPropagation();
-    icon.classList.toggle('active');
-  });
-});
-
-// --- REGISTRO DE PRUEBA ---
-document.getElementById('target-form').addEventListener('submit', async (e) => {
-  e.preventDefault();
-  const btn = e.target.querySelector('button[type="submit"]');
-  btn.classList.add('loading');
-  btn.textContent = 'Enviando...';
-
-  const payload = {
-    client_name: document.getElementById('client_name').value.trim(),
-    client_email: document.getElementById('client_email').value.trim(),
-    domain: document.getElementById('domain').value.trim(),
-    vector_name: document.getElementById('vector_name').value.trim(),
-    path: document.getElementById('path').value.trim(),
-    webhook_url: document.getElementById('webhook_url').value.trim(),
-  };
-
-  try {
-    const res = await fetch(`${FUNCTIONS_URL}/create-monitor`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload),
+  // Tooltips: cerrar al clic fuera
+  document.querySelectorAll('.info-icon').forEach(icon => {
+    icon.addEventListener('click', (e) => {
+      e.stopPropagation();
+      icon.classList.toggle('active');
     });
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.error || 'Error al registrar');
-    alert('¡Prueba iniciada! Acceso concedido por 72 horas.');
-    e.target.reset();
-    document.getElementById('lookup_email').value = payload.client_email;
-    loadMyMonitors();
-  } catch (err) {
-    alert('Error: ' + err.message);
-  } finally {
-    btn.classList.remove('loading');
-    btn.textContent = 'Iniciar Prueba Gratuita de 72 Horas';
+  });
+
+  // Formulario
+  const form = document.getElementById('target-form');
+  if (form) {
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = form.querySelector('button[type="submit"]');
+      if (!btn) return;
+      btn.classList.add('loading');
+      btn.textContent = 'Enviando...';
+
+      const payload = {
+        client_name: document.getElementById('client_name').value.trim(),
+        client_email: document.getElementById('client_email').value.trim(),
+        domain: document.getElementById('domain').value.trim(),
+        vector_name: document.getElementById('vector_name').value.trim(),
+        path: document.getElementById('path').value.trim(),
+        webhook_url: document.getElementById('webhook_url').value.trim(),
+      };
+
+      try {
+        const res = await fetch(`${FUNCTIONS_URL}/create-monitor`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) throw new Error(data.error || 'Error al registrar');
+        alert('¡Prueba iniciada! Acceso concedido por 72 horas.');
+        form.reset();
+        document.getElementById('lookup_email').value = payload.client_email;
+        loadMyMonitors();
+      } catch (err) {
+        alert('Error: ' + err.message);
+      } finally {
+        btn.classList.remove('loading');
+        btn.textContent = 'Iniciar Prueba Gratuita de 72 Horas';
+      }
+    });
   }
+});
+
+// Cerrar tooltip al hacer clic fuera
+document.addEventListener('click', () => {
+  document.querySelectorAll('.info-icon.active').forEach(el => el.classList.remove('active'));
 });
 
 // --- CARGAR MONITORES ---
 async function loadMyMonitors() {
-  const email = document.getElementById('lookup_email').value.trim().toLowerCase();
+  const emailInput = document.getElementById('lookup_email');
   const tableBody = document.getElementById('targets-table');
+  if (!emailInput || !tableBody) return;
+  const email = emailInput.value.trim().toLowerCase();
   if (!email) { alert('Introduce tu email'); return; }
 
   tableBody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:var(--text-muted);">Cargando...</td></tr>`;
 
   try {
     const res = await fetch(`${FUNCTIONS_URL}/list-monitors?email=${encodeURIComponent(email)}`);
-    const data = await res.json();
+    const data = await res.json().catch(() => ({}));
     if (!res.ok) throw new Error(data.error || 'Error al cargar');
     if (!data.monitors || data.monitors.length === 0) {
       tableBody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:var(--text-muted);">No tienes monitores con este email.</td></tr>`;
@@ -333,7 +349,7 @@ async function loadMyMonitors() {
     }
     const now = new Date();
     tableBody.innerHTML = data.monitors.map(t => {
-      const isExpired = t.plan_type === 'trial' && new Date(t.expires_at) < now;
+      const isExpired = t.plan_type === 'trial' && t.expires_at && new Date(t.expires_at) < now;
       const badge = !t.is_active
         ? `<span class="badge badge-expired">Inactivo</span>`
         : (isExpired
@@ -343,13 +359,13 @@ async function loadMyMonitors() {
             : `<span class="badge badge-active">${t.plan_type}</span>`));
       return `<tr>
         <td><strong>${t.domain}</strong></td>
-        <td>${t.vector_name}</td>
-        <td><code>${t.path}</code></td>
+        <td>${t.vector_name || ''}</td>
+        <td><code>${t.path || ''}</code></td>
         <td>${badge}</td>
         <td>
-          <button class="btn-action" onclick="movePriority(${t.id}, ${t.priority}, 'up')" title="Subir prioridad">↑</button>
-          <button class="btn-action" onclick="movePriority(${t.id}, ${t.priority}, 'down')" title="Bajar prioridad">↓</button>
-          <button class="btn-action btn-delete" onclick="deleteMonitor(${t.id})">Eliminar</button>
+          <button type="button" class="btn-action" onclick="movePriority(${t.id}, ${t.priority}, 'up')" title="Subir prioridad">↑</button>
+          <button type="button" class="btn-action" onclick="movePriority(${t.id}, ${t.priority}, 'down')" title="Bajar prioridad">↓</button>
+          <button type="button" class="btn-action btn-delete" onclick="deleteMonitor(${t.id})">Eliminar</button>
         </td>
       </tr>`;
     }).join('');
@@ -388,7 +404,7 @@ async function movePriority(id, current, direction) {
 
 // --- CHECKOUT ---
 function startCheckout(plan) {
-  const url = CONFIG.STRIPE_CHECKOUT[plan];
+  const url = CONFIG.STRIPE_CHECKOUT && CONFIG.STRIPE_CHECKOUT[plan];
   if (!url) {
     alert("ℹ️ El pago aún no está disponible. Estamos terminando de configurarlo. Vuelve pronto.");
     return;
@@ -430,14 +446,23 @@ function legalText(type) {
 }
 
 function openModal(type) {
-  document.getElementById('modal-content').innerHTML = legalText(type);
-  document.getElementById('legal-modal').style.display = 'flex';
+  const modal = document.getElementById('legal-modal');
+  const content = document.getElementById('modal-content');
+  if (!modal || !content) return;
+  content.innerHTML = legalText(type);
+  modal.style.display = 'flex';
 }
 function closeModal() {
-  document.getElementById('legal-modal').style.display = 'none';
+  const modal = document.getElementById('legal-modal');
+  if (modal) modal.style.display = 'none';
 }
-document.getElementById('legal-modal').addEventListener('click', (e) => {
-  if (e.target.id === 'legal-modal') closeModal();
+document.addEventListener('DOMContentLoaded', () => {
+  const modal = document.getElementById('legal-modal');
+  if (modal) {
+    modal.addEventListener('click', (e) => {
+      if (e.target.id === 'legal-modal') closeModal();
+    });
+  }
 });
 </script>
 </body>
