@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ADAMANTIUM AI — Inteligencia Competitiva B2B</title>
+  <style>
+    :root { --bg:#0f172a; --card-bg:#1e293b; --accent:#38bdf8; --discord:#5865F2;
+      --text:#f8fafc; --text-muted:#94a3b8; --border:#334155;
+      --danger:#ef4444; --success:#22c55e; --warning:#f59e0b; }
+    body { font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+      background:var(--bg); color:var(--text); margin:0; padding:40px 20px;
+      display:flex; justify-content:center; }
+    .container { width:100%; max-width:1000px; }
+    .header { text-align:center; margin-bottom:30px; }
+    .header h1 { font-size:2.2rem; margin:0 0 10px 0; }
+    .header p { color:var(--text-muted); margin:0; }
+    .card { background:var(--card-bg); border:1px solid var(--border);
+      border-radius:12px; padding:28px; margin-bottom:24px;
+      box-shadow:0 10px 15px -3px rgba(0,0,0,0.3); }
+    .card-title { font-size:1.2rem; font-weight:600; margin-top:0; margin-bottom:16px; }
+    .tutorial-box { background:#111827; border-left:4px solid var(--discord);
+      padding:16px; border-radius:6px; margin-bottom:20px; }
+    .steps-list { margin:0; padding-left:20px; color:var(--text-muted);
+      font-size:0.9rem; line-height:1.6; }
+    .steps-list strong { color:var(--text); }
+    .plans-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+    .plan-card { border:1px solid var(--border); border-radius:8px;
+      padding:20px; text-align:center; background:#0f172a; }
+    .plan-card.featured { border-color:var(--accent); background:rgba(56,189,248,0.05); }
+    .plan-price { font-size:1.8rem; font-weight:700; margin:10px 0; }
+    .btn-pay { display:inline-block; width:80%; padding:10px;
+      background:var(--accent); color:#0f172a; font-weight:700;
+      text-decoration:none; border-radius:6px; margin-top:10px;
+      border:none; cursor:pointer; font-size:0.95rem; }
+    .btn-pay:disabled { opacity:0.5; cursor:not-allowed; }
+    .form-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+    .full-width { grid-column:span 2; }
+    @media (max-width:640px) {
+      .form-grid, .plans-grid, .full-width { grid-template-columns:1fr; grid-column:span 1; }
+    }
+    .label-container { display:flex; align-items:center; gap:6px; margin-bottom:6px; }
+    label { font-size:0.8rem; font-weight:600; color:var(--text-muted);
+      text-transform:uppercase; }
+    .info-icon { display:inline-flex; justify-content:center; align-items:center;
+      width:16px; height:16px; background:var(--border); color:var(--text);
+      border-radius:50%; font-size:0.7rem; cursor:pointer; position:relative;
+      flex-shrink:0; user-select:none; }
+    .info-icon:hover .tooltip-text,
+    .info-icon:focus .tooltip-text,
+    .info-icon.active .tooltip-text { visibility:visible; opacity:1; }
+    .tooltip-text { visibility:hidden; opacity:0; width:240px;
+      background:#0f172a; color:#f8fafc; text-align:left; border-radius:6px;
+      padding:10px 12px; position:absolute; z-index:1000; bottom:140%;
+      left:50%; transform:translateX(-50%); border:1px solid var(--accent);
+      font-size:0.75rem; font-weight:normal; text-transform:none; line-height:1.4;
+      box-shadow:0 10px 15px -3px rgba(0,0,0,0.6); transition:opacity 0.15s;
+      pointer-events:none; }
+    .tooltip-text::after { content:''; position:absolute; top:100%; left:50%;
+      margin-left:-6px; border-width:6px; border-style:solid;
+      border-color:var(--accent) transparent transparent transparent; }
+    input, select, textarea { background:#0f172a; border:1px solid var(--border);
+      color:var(--text); padding:12px; border-radius:6px; font-size:0.95rem;
+      outline:none; width:100%; box-sizing:border-box; }
+    button.btn-submit { grid-column:span 2; background:var(--success);
+      color:#0f172a; font-weight:700; border:none; padding:14px;
+      border-radius:6px; cursor:pointer; font-size:1rem; }
+    table { width:100%; border-collapse:collapse; font-size:0.9rem; }
+    th { padding:12px; color:var(--text-muted); text-transform:uppercase;
+      font-size:0.75rem; border-bottom:1px solid var(--border); text-align:left; }
+    td { padding:12px; border-bottom:1px solid var(--border); vertical-align:middle; }
+    .badge { padding:4px 8px; border-radius:4px; font-size:0.75rem; font-weight:600; }
+    .badge-active { background:rgba(34,197,94,0.2); color:var(--success); }
+    .badge-expired { background:rgba(239,68,68,0.2); color:var(--danger); }
+    .badge-trial { background:rgba(245,158,11,0.2); color:var(--warning); }
+    .btn-action { background:#334155; border:none; color:var(--text);
+      padding:6px 10px; border-radius:4px; cursor:pointer; font-size:0.8rem;
+      margin-right:4px; }
+    .btn-action:hover { background:var(--accent); color:#0f172a; }
+    .btn-delete { background:rgba(239,68,68,0.2); color:var(--danger); }
+    .btn-delete:hover { background:var(--danger); color:white; }
+    .floating-banner { background:linear-gradient(135deg,#1e293b,#0f172a);
+      border:1px solid var(--accent); padding:15px 20px; border-radius:8px;
+      margin-bottom:20px; display:flex; align-items:center;
+      justify-content:space-between; box-shadow:0 4px 12px rgba(56,189,248,0.15); }
+    .footer { text-align:center; margin-top:40px; padding-top:20px;
+      border-top:1px solid var(--border); color:var(--text-muted); font-size:0.85rem; }
+    .footer-links { display:flex; justify-content:center; gap:20px; margin-bottom:10px; flex-wrap:wrap; }
+    .footer-links a { color:var(--text-muted); text-decoration:none; cursor:pointer; }
+    .footer-links a:hover { color:var(--accent); }
+    .loading { opacity:0.6; pointer-events:none; }
+    #legal-modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%;
+      background:rgba(0,0,0,0.8); z-index:2000; align-items:center; justify-content:center; }
+    #legal-modal .modal-box { background:var(--card-bg); border:1px solid var(--accent);
+      padding:30px; border-radius:12px; max-width:640px; width:90%;
+      max-height:80vh; overflow-y:auto; position:relative; }
+    #legal-modal .close-btn { position:absolute; top:12px; right:15px; background:none;
+      border:none; color:var(--text); font-size:1.6rem; cursor:pointer; line-height:1; }
+    #modal-content h2 { margin-top:0; color:var(--accent); }
+    #modal-content p { line-height:1.6; color:var(--text); }
+  </style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <h1>🔍 ADAMANTIUM AI — Inteligencia Competitiva B2B</h1>
+    <p>Automatiza el rastreo de tus competidores y recibe análisis estratégicos en tiempo real.</p>
+  </div>
+
+  <div class="floating-banner">
+    <div>
+      <strong style="color:var(--accent);">⚖️ Garantía Legal y Transparencia B2B:</strong>
+      <span style="font-size:0.9rem; color:var(--text-muted);">72h de prueba sin compromiso y política de reembolso según plan.</span>
+    </div>
+    <button onclick="openModal('terms')" style="background:var(--accent); border:none; color:#0f172a; padding:6px 12px; border-radius:6px; font-weight:600; cursor:pointer;">Ver Términos</button>
+  </div>
+
+  <div class="card">
+    <h3 class="card-title">📱 Paso 1: Configurar canal de Discord</h3>
+    <div class="tutorial-box">
+      <ol class="steps-list">
+        <li>Abre <strong>Discord</strong> y crea un servidor o canal privado para tus alertas.</li>
+        <li>Haz clic en el icono de engranaje ⚙️ del canal ➔ <strong>Integraciones</strong> ➔ <strong>Webhooks</strong>.</li>
+        <li>Haz clic en <strong>Crear Webhook</strong> y pulsa <strong>Copiar URL de Webhook</strong>.</li>
+      </ol>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3 class="card-title">⚡ Paso 2: Activar Prueba Gratuita (72 Horas)</h3>
+    <form id="target-form" class="form-grid">
+      <div>
+        <div class="label-container"><label>Tu Empresa / Cliente</label>
+          <span class="info-icon" tabindex="0">i<span class="tooltip-text">Nombre de tu organización para identificar los reportes enviados.</span></span>
+        </div>
+        <input type="text" id="client_name" placeholder="ej. Mi Empresa SaaS" required>
+      </div>
+      <div>
+        <div class="label-container"><label>Email de Contacto</label>
+          <span class="info-icon" tabindex="0">i<span class="tooltip-text">Lo usamos para vincular tu pago y enviarte avisos. Nunca lo compartimos con terceros.</span></span>
+        </div>
+        <input type="email" id="client_email" placeholder="tu@empresa.com" required>
+      </div>
+      <div>
+        <div class="label-container"><label>Dominio Competidor</label>
+          <span class="info-icon" tabindex="0">i<span class="tooltip-text">El dominio web principal de la empresa que deseas monitorizar (ej: stripe.com).</span></span>
+        </div>
+        <input type="text" id="domain" placeholder="ej. stripe.com" required>
+      </div>
+      <div>
+        <div class="label-container"><label>Vector de Análisis</label>
+          <span class="info-icon" tabindex="0">i<span class="tooltip-text">Define con tus palabras qué quieres vigilar (ej: 'precios y comisiones', 'nuevas contrataciones').</span></span>
+        </div>
+        <input type="text" id="vector_name" placeholder="ej. Precios y comisiones" required>
+      </div>
+      <div>
+        <div class="label-container"><label>Ruta Web</label>
+          <span class="info-icon" tabindex="0">i<span class="tooltip-text">La sección exacta de la web a vigilar (ej: /pricing, /careers, /changelog).</span></span>
+        </div>
+        <input type="text" id="path" placeholder="/es/pricing" required>
+      </div>
+      <div>
+        <div class="label-container"><label>Webhook de Discord</label>
+          <span class="info-icon" tabindex="0">i<span class="tooltip-text">El enlace único que copiaste en el Paso 1. Ahí llegarán tus alertas.</span></span>
+        </div>
+        <input type="url" id="webhook_url" placeholder="https://discord.com/api/webhooks/..." required>
+      </div>
+      <button type="submit" class="btn-submit">Iniciar Prueba Gratuita de 72 Horas</button>
+    </form>
+  </div>
+
+  <div class="card">
+    <h3 class="card-title">💳 Paso 3: Planes y Suscripciones</h3>
+    <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:20px;">
+      Evita el bloqueo de tus monitores tras las 72h de prueba contratando un plan profesional:
+    </p>
+    <div class="plans-grid">
+      <div class="plan-card">
+        <h3>Plan Mensual</h3>
+        <div class="plan-price">800 € <span style="font-size:0.85rem; color:var(--text-muted);">/mes · IVA incluido</span></div>
+        <p style="color:var(--text-muted); font-size:0.85rem;">Renovación mensual. Cancela cuando quieras.</p>
+        <button class="btn-pay" onclick="startCheckout('monthly')" id="btn-monthly">Contratar Mensual</button>
+      </div>
+      <div class="plan-card featured">
+        <h3>Plan Anual</h3>
+        <div class="plan-price">9.600 € <span style="font-size:0.85rem; color:var(--text-muted);">/año · IVA incluido</span></div>
+        <p style="color:var(--text-muted); font-size:0.85rem;">Pago único anual para continuidad absoluta.</p>
+        <button class="btn-pay" onclick="startCheckout('annual')" id="btn-annual">Contratar Anual</button>
+      </div>
+    </div>
+    <p style="color:var(--warning); font-size:0.8rem; margin-top:16px;" id="stripe-warning"></p>
+  </div>
+
+  <div class="card">
+    <h3 class="card-title">📊 Estado de tus Monitores</h3>
+    <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:12px;">
+      Introduce tu email para cargar tus monitores:
+    </p>
+    <div style="display:flex; gap:10px; margin-bottom:16px;">
+      <input type="email" id="lookup_email" placeholder="tu@empresa.com" style="flex:1;">
+      <button class="btn-action" style="background:var(--accent); color:#0f172a; padding:12px 20px;" onclick="loadMyMonitors()">Cargar</button>
+    </div>
+    <table>
+      <thead><tr><th>Competidor</th><th>Vector</th><th>Ruta</th><th>Estado</th><th>Acciones</th></tr></thead>
+      <tbody id="targets-table">
+        <tr><td colspan="5" style="text-align:center; color:var(--text-muted);">Carga tus monitores con tu email.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="footer">
+    <div class="footer-links">
+      <a onclick="openModal('legal')">Aviso Legal</a>
+      <a onclick="openModal('terms')">Términos, Cancelaciones y Reembolsos</a>
+      <a onclick="openModal('privacy')">Política de Privacidad</a>
+    </div>
+    <p>&copy; 2026 ADAMANTIUM AI. Todos los derechos reservados.</p>
+  </div>
+</div>
+
+<div id="legal-modal">
+  <div class="modal-box">
+    <button class="close-btn" onclick="closeModal()">×</button>
+    <div id="modal-content"></div>
+  </div>
+</div>
+
+<script>
+/* ============================================================
+   ⚙️ CONFIGURACIÓN — RELLENA ESTOS VALORES
+   ============================================================ */
+const CONFIG = {
+  // ✅ Tu Reference ID de Supabase (ya está bien)
+  SUPABASE_PROJECT_REF: "tjsywodxdwipsfsmiclr",
+
+  // ✅ DATOS DE TU EMPRESA — RELLENA ESTO (obligatorio para Stripe)
+  EMPRESA: {
+    nombre: "PENDIENTE — Tu Nombre o Empresa",     // ej: "Moisés Rincón — ADAMANTIUM AI"
+    nif: "PENDIENTE — Tu NIF/DNI",                 // ej: "61320632X"
+    email: "PENDIENTE — tu@email.com",             // ej: "bagerbghat@gmail.com"
+    direccion: "PENDIENTE — Tu dirección fiscal",  // ej: "Calle Mejía Lequerica, 21, 28004 Madrid, España"
+  },
+
+  // ✅ URLs de pago de Stripe (cuando las tengas)
+  // Déjalas en null hasta que crees los Payment Links.
+  STRIPE_CHECKOUT: {
+    monthly: "https://buy.stripe.com/4gMaEX4Bu4Mz7Ov0rg7g400"
+    annual: "https://buy.stripe.com/9B6bJ14Bufrd2ub6PE7g401"
+  },
+
+  // ✅ Fecha de última actualización legal
+  LEGAL_LAST_UPDATE: "15/11/2026",  // cámbiala cuando edites los textos
+};
+
+/* ============================================================
+   NO TOQUES A PARTIR DE AQUÍ
+   ============================================================ */
+
+const FUNCTIONS_URL = `https://${CONFIG.SUPABASE_PROJECT_REF}.supabase.co/functions/v1`;
+
+window.addEventListener('DOMContentLoaded', () => {
+  if (!CONFIG.STRIPE_CHECKOUT.monthly && !CONFIG.STRIPE_CHECKOUT.annual) {
+    document.getElementById('stripe-warning').textContent =
+      "ℹ️ Los pagos aún no están activos. Cuando estén configurados, los botones funcionarán automáticamente.";
+    document.getElementById('btn-monthly').disabled = true;
+    document.getElementById('btn-annual').disabled = true;
+  }
+});
+
+document.addEventListener('click', (e) => {
+  document.querySelectorAll('.info-icon.active').forEach(el => {
+    if (!el.contains(e.target)) el.classList.remove('active');
+  });
+});
+document.querySelectorAll('.info-icon').forEach(icon => {
+  icon.addEventListener('click', (e) => {
+    e.stopPropagation();
+    icon.classList.toggle('active');
+  });
+});
+
+// --- REGISTRO DE PRUEBA ---
+document.getElementById('target-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const btn = e.target.querySelector('button[type="submit"]');
+  btn.classList.add('loading');
+  btn.textContent = 'Enviando...';
+
+  const payload = {
+    client_name: document.getElementById('client_name').value.trim(),
+    client_email: document.getElementById('client_email').value.trim(),
+    domain: document.getElementById('domain').value.trim(),
+    vector_name: document.getElementById('vector_name').value.trim(),
+    path: document.getElementById('path').value.trim(),
+    webhook_url: document.getElementById('webhook_url').value.trim(),
+  };
+
+  try {
+    const res = await fetch(`${FUNCTIONS_URL}/create-monitor`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Error al registrar');
+    alert('¡Prueba iniciada! Acceso concedido por 72 horas.');
+    e.target.reset();
+    document.getElementById('lookup_email').value = payload.client_email;
+    loadMyMonitors();
+  } catch (err) {
+    alert('Error: ' + err.message);
+  } finally {
+    btn.classList.remove('loading');
+    btn.textContent = 'Iniciar Prueba Gratuita de 72 Horas';
+  }
+});
+
+// --- CARGAR MONITORES ---
+async function loadMyMonitors() {
+  const email = document.getElementById('lookup_email').value.trim().toLowerCase();
+  const tableBody = document.getElementById('targets-table');
+  if (!email) { alert('Introduce tu email'); return; }
+
+  tableBody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:var(--text-muted);">Cargando...</td></tr>`;
+
+  try {
+    const res = await fetch(`${FUNCTIONS_URL}/list-monitors?email=${encodeURIComponent(email)}`);
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Error al cargar');
+    if (!data.monitors || data.monitors.length === 0) {
+      tableBody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:var(--text-muted);">No tienes monitores con este email.</td></tr>`;
+      return;
+    }
+    const now = new Date();
+    tableBody.innerHTML = data.monitors.map(t => {
+      const isExpired = t.plan_type === 'trial' && new Date(t.expires_at) < now;
+      const badge = !t.is_active
+        ? `<span class="badge badge-expired">Inactivo</span>`
+        : (isExpired
+          ? `<span class="badge badge-expired">Prueba Expirada</span>`
+          : (t.plan_type === 'trial'
+            ? `<span class="badge badge-trial">Prueba 72h</span>`
+            : `<span class="badge badge-active">${t.plan_type}</span>`));
+      return `<tr>
+        <td><strong>${t.domain}</strong></td>
+        <td>${t.vector_name}</td>
+        <td><code>${t.path}</code></td>
+        <td>${badge}</td>
+        <td>
+          <button class="btn-action" onclick="movePriority(${t.id}, ${t.priority}, 'up')" title="Subir prioridad">↑</button>
+          <button class="btn-action" onclick="movePriority(${t.id}, ${t.priority}, 'down')" title="Bajar prioridad">↓</button>
+          <button class="btn-action btn-delete" onclick="deleteMonitor(${t.id})">Eliminar</button>
+        </td>
+      </tr>`;
+    }).join('');
+  } catch (err) {
+    tableBody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:var(--danger);">${err.message}</td></tr>`;
+  }
+}
+
+// --- ACCIONES ---
+async function deleteMonitor(id) {
+  if (!confirm('¿Eliminar este monitor?')) return;
+  const email = document.getElementById('lookup_email').value.trim().toLowerCase();
+  try {
+    const res = await fetch(`${FUNCTIONS_URL}/delete-monitor`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id, email }),
+    });
+    if (!res.ok) throw new Error('Error al eliminar');
+    loadMyMonitors();
+  } catch (err) { alert(err.message); }
+}
+
+async function movePriority(id, current, direction) {
+  const email = document.getElementById('lookup_email').value.trim().toLowerCase();
+  const newPriority = direction === 'up' ? current - 1 : current + 1;
+  try {
+    await fetch(`${FUNCTIONS_URL}/update-priority`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id, email, priority: newPriority }),
+    });
+    loadMyMonitors();
+  } catch (err) { alert(err.message); }
+}
+
+// --- CHECKOUT ---
+function startCheckout(plan) {
+  const url = CONFIG.STRIPE_CHECKOUT[plan];
+  if (!url) {
+    alert("ℹ️ El pago aún no está disponible. Estamos terminando de configurarlo. Vuelve pronto.");
+    return;
+  }
+  window.location.href = url;
+}
+
+// --- MODALES LEGALES ---
+function legalText(type) {
+  const E = CONFIG.EMPRESA;
+  const fecha = CONFIG.LEGAL_LAST_UPDATE;
+  if (type === 'legal') {
+    return `<h2>Aviso Legal</h2>
+      <p>© 2026 ADAMANTIUM AI. Todos los derechos reservados.</p>
+      <p><strong>Titular:</strong> ${E.nombre}<br>
+      <strong>NIF:</strong> ${E.nif}<br>
+      <strong>Email de contacto:</strong> ${E.email}<br>
+      <strong>Dirección:</strong> ${E.direccion}</p>
+      <p>Servicio automatizado de inteligencia competitiva B2B. El acceso y uso de esta plataforma implica la aceptación de los presentes términos.</p>
+      <p><em>Última actualización: ${fecha}</em></p>`;
+  }
+  if (type === 'terms') {
+    return `<h2>Términos, Cancelaciones y Reembolsos</h2>
+      <p>© 2026 ADAMANTIUM AI. Todos los derechos reservados.</p>
+      <p><strong>1. Prueba gratuita:</strong> 72 horas desde el registro, gestionada automáticamente. Al finalizar, el servicio se suspende salvo contratación de un plan.</p>
+      <p><strong>2. Plan mensual (800 €/mes, IVA incluido):</strong> Renovación automática. Cancelable en cualquier momento desde el portal de Stripe. El servicio se mantiene hasta el final del periodo pagado. No se reembolsan meses parciales salvo error técnico demostrable.</p>
+      <p><strong>3. Plan anual (9.600 €/año, IVA incluido):</strong> Derecho de desistimiento de 14 días naturales desde el pago (reembolso íntegro). Pasados los 14 días, no reembolsable.</p>
+      <p><strong>4. Responsabilidad:</strong> Las alertas se generan con IA sobre datos públicos. No garantizamos la exactitud absoluta de la fuente original ni el uso que el cliente haga de la información.</p>
+      <p><em>Última actualización: ${fecha}</em></p>`;
+  }
+  return `<h2>Política de Privacidad</h2>
+    <p>© 2026 ADAMANTIUM AI. Todos los derechos reservados.</p>
+    <p><strong>Datos tratados:</strong> nombre de empresa, email, dominios monitorizados y webhooks de Discord.</p>
+    <p><strong>Finalidad:</strong> prestar el servicio de alertas y gestionar la facturación.</p>
+    <p><strong>Base legal:</strong> ejecución de contrato (RGPD art. 6.1.b) e interés legítimo (art. 6.1.f).</p>
+    <p><strong>Destinatarios:</strong> Stripe (pagos) y Supabase (alojamiento). No cedemos datos a terceros salvo obligación legal.</p>
+    <p><strong>Derechos:</strong> puedes ejercer acceso, rectificación, supresión y portabilidad escribiendo a ${E.email}.</p>
+    <p><em>Última actualización: ${fecha}</em></p>`;
+}
+
+function openModal(type) {
+  document.getElementById('modal-content').innerHTML = legalText(type);
+  document.getElementById('legal-modal').style.display = 'flex';
+}
+function closeModal() {
+  document.getElementById('legal-modal').style.display = 'none';
+}
+document.getElementById('legal-modal').addEventListener('click', (e) => {
+  if (e.target.id === 'legal-modal') closeModal();
+});
+</script>
+</body>
+</html>
